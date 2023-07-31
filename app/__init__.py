@@ -36,7 +36,7 @@ def create_app():
     api = Api(app)
     api.add_resource(SignupController, '/signup')
     api.add_resource(AuthController, '/login')
-    api.add_resource(LocationController, '/location')
+    api.add_resource(LocationController, '/location', '/location/<pk>', endpoint='location_ep')
 
     jwt.init_app(app)
 

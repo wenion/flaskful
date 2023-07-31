@@ -17,13 +17,13 @@ class AuthController(Resource):
         # parser.add_argument('password')
 
         args = parser.parse_args()
-        print('args', args)
+        # print('args', args)
 
         user_auth = args['email'].lower()
         password = args['password']
 
         exist = User.find(User.email == user_auth).all()
-        print('exist', exist)
+        # print('exist', exist)
         if not len(exist):
             exist = User.find(User.phone == user_auth).all()
             if not len(exist):
@@ -32,12 +32,13 @@ class AuthController(Resource):
         if len(exist) and exist[0]:
             user = exist[0]
             authorized = user.check_password(password)
-            print('authorized', authorized)
+            # print('authorized', authorized)
             if authorized:
                 expires = datetime.timedelta(days=7)
                 access_token = create_access_token(identity=user, expires_delta=expires)
                 data = {
-                    'userid': user.userid,
+                    # 'userid': user.userid,
+                    'name': user.name,
                     'email': user.email,
                     'phone': user.phone,
                     'access_token': access_token,

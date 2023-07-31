@@ -15,24 +15,26 @@ class SignupController(Resource):
 
     def post(self):
         parser = reqparse.RequestParser()
+        parser.add_argument('name', type=str, required=True, location='form',
+                            help='This field cannot be left blank')
         parser.add_argument('email', type=str, required=True, location='form',
                             help='This field cannot be left blank')
         parser.add_argument('password', type=str, required=True, location='form',
                             help='This field cannot be left blank')
         args = parser.parse_args()
-        print("parser",parser, args, args['email'].lower())
-        
+        # print("parser",parser, args, args['email'].lower())
+
         exist = User.find(User.email == args['email'].lower()).all()
         if len(exist) > 0:
-            return {'status': '', 'message': 'User has already been created, aborting.'}, 400
+            return {'status': 'error', 'message': 'User has already been created.', 'data': {}}, 200
         
         data = {
-            'userid': '',
+            'name': args['name'],
             'email': args['email'].lower(),
             'phone': '',
-            'password': User.hash_password(args['password'])}
+            'password': User.hash_password(args['password']),}
 
         user = User(**data)
         user.save()
 
-        return {'status': '', 'message': 'user has been created successfully.', 'pk': user.pk}, 201
+        return {'status': 'ok', 'message': 'user has been created successfully.', 'data': data}, 201

@@ -11,10 +11,12 @@ class User(JsonModel):
     class Meta:
         global_key_prefix = 's'
         model_key_prefix = 'User'
-    userid: str = Field(index=True)
+    # userid: str = Field(index=True)
+    name: str = Field(index=True)
     email: str = Field(index=True)
     phone: str = Field(index=True)
     password: str = Field(index=True)
+    deleted: int = Field(index=True, default=0)
 
     def hash_password(password):
         return generate_password_hash(password).decode('utf8')
