@@ -15,17 +15,19 @@ class LocationController(Resource):
         location_dict =[]
 
         for location in locations:
-            location_dict.append(location.dict())
+            if not location.deleted:
+                location_dict.append(location.dict())
 
         return {'status': 'ok', 'data': location_dict}
 
     @jwt_required()
     def delete(self, pk):
+        print("delete", pk)
         try:
             location = Location.get(pk)
             print(location)
         except NotFoundError:
-            return {'status': 'error', 'error': repr(NotFoundError)}, 400
+            return {'status': 'error', 'error': repr(NotFoundError)}, 200
 
         location.deleted = 1
         location.save()
@@ -48,6 +50,7 @@ class LocationController(Resource):
 
         location.name = args['name']
         location.abbreviation = args['abbreviation']
+        location.deleted = 0
         location.save()
 
         return {'status': 'ok', 'data': location.dict()}

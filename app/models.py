@@ -31,6 +31,7 @@ class Location(JsonModel):
         model_key_prefix = 'Location'
     name: str = Field(index=True)
     abbreviation: str = Field(index=True)
+    deleted: int = Field(index=True, default=0)
 
 
 __all__ = (

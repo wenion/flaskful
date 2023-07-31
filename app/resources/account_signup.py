@@ -26,7 +26,7 @@ class SignupController(Resource):
 
         exist = User.find(User.email == args['email'].lower()).all()
         if len(exist) > 0:
-            return {'status': 'error', 'message': 'User has already been created.', 'data': {}}, 200
+            return {'status': 'error', 'message': 'User has already been created.', 'data': {}}, 202
         
         data = {
             'name': args['name'],
@@ -37,4 +37,4 @@ class SignupController(Resource):
         user = User(**data)
         user.save()
 
-        return {'status': 'ok', 'message': 'user has been created successfully.', 'data': data}, 201
+        return {'status': 'ok', 'message': 'user has been created successfully.', 'data': {}}, 201
