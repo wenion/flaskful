@@ -10,6 +10,7 @@ from redis_om import Migrator
 from resources.account_signup import SignupController
 from resources.accounts import AuthController
 from resources.location import LocationController
+from resources.level import LevelController
 from models import User
 
 # mail = Mail()
@@ -37,6 +38,7 @@ def create_app():
     api.add_resource(SignupController, '/signup')
     api.add_resource(AuthController, '/login')
     api.add_resource(LocationController, '/location', '/location/<pk>', endpoint='location_ep')
+    api.add_resource(LevelController, '/level', '/level/<pk>', endpoint='level_ep')
 
     jwt.init_app(app)
 
