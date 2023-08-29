@@ -13,6 +13,7 @@ from resources.location import LocationController
 from resources.level import LevelController
 from resources.class_item import ClassItemController
 from resources.teacher import TeacherController
+from resources.student import StudentController
 from models import User
 
 # mail = Mail()
@@ -43,6 +44,7 @@ def create_app():
     api.add_resource(LevelController, '/level', '/level/<pk>', endpoint='level_ep')
     api.add_resource(ClassItemController, '/class-item', '/class-item/<pk>', endpoint='class-item_ep')
     api.add_resource(TeacherController, '/teacher', '/teacher/<pk>', endpoint='teacher_ep')
+    api.add_resource(StudentController, '/student', '/student/<pk>', endpoint='student_ep')
 
     jwt.init_app(app)
 
