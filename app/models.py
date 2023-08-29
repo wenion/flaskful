@@ -64,6 +64,7 @@ class Teacher(JsonModel):
     name: str = Field(index=True)
     phone: str = Field(index=True)
     class_list: List[str]
+    deleted: int = Field(index=True, default=0)
 
 
 class Student(JsonModel):
@@ -73,6 +74,7 @@ class Student(JsonModel):
     name: str = Field(index=True)
     phone: str = Field(index=True)
     class_list: List[str]
+    deleted: int = Field(index=True, default=0)
 
 
 # class ClassOption(JsonModel):
