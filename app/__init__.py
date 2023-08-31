@@ -10,6 +10,7 @@ from redis_om import Migrator
 from resources.account_signup import SignupController
 from resources.accounts import AuthController
 from resources.location import LocationController
+from resources.term import TermController
 from resources.level import LevelController
 from resources.class_item import ClassItemController
 from resources.teacher import TeacherController
@@ -41,6 +42,7 @@ def create_app():
     api.add_resource(SignupController, '/signup')
     api.add_resource(AuthController, '/login')
     api.add_resource(LocationController, '/location', '/location/<pk>', endpoint='location_ep')
+    api.add_resource(TermController, '/term', '/term/<pk>', endpoint='term_ep')
     api.add_resource(LevelController, '/level', '/level/<pk>', endpoint='level_ep')
     api.add_resource(ClassItemController, '/class-item', '/class-item/<pk>', endpoint='class-item_ep')
     api.add_resource(TeacherController, '/teacher', '/teacher/<pk>', endpoint='teacher_ep')

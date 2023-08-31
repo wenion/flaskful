@@ -31,6 +31,7 @@ class Location(JsonModel):
         model_key_prefix = 'Location'
     name: str = Field(index=True)
     abbreviation: str = Field(index=True)
+    # address: str = Field(index=True)
     deleted: int = Field(index=True, default=0)
 
 
@@ -75,6 +76,29 @@ class Student(JsonModel):
     phone: str = Field(index=True)
     class_list: List[str]
     deleted: int = Field(index=True, default=0)
+
+
+class Term(JsonModel):
+    class Meta:
+        global_key_prefix = 's'
+        model_key_prefix = 'Term'
+    name: str = Field(index=True)
+    year: str = Field(index=True)
+    start_day: datetime.date
+    end_day: datetime.date
+    number_of_week: int = Field(index=True, default=0)
+    deleted: int = Field(index=True, default=0)
+
+    def dict(self):
+        return {
+            'pk': self.pk,
+            'name': self.name,
+            'year': self.year,
+            'start_day': self.start_day.isoformat(),
+            'end_day': self.end_day.isoformat(),
+            'number_of_week': self.number_of_week,
+            'deleted': self.deleted
+        }
 
 
 # class ClassOption(JsonModel):
