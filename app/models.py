@@ -31,8 +31,23 @@ class Location(JsonModel):
         model_key_prefix = 'Location'
     name: str = Field(index=True)
     abbreviation: str = Field(index=True)
-    # address: str = Field(index=True)
+    address: str = Field(index=True)
+    day_of_week: str = Field(index=True)
+    start_time: datetime.datetime
+    end_time: datetime.datetime
     deleted: int = Field(index=True, default=0)
+
+    def dict(self):
+        return {
+            'pk': self.pk,
+            'name': self.name,
+            'abbreviation': self.abbreviation,
+            'address': self.address,
+            'day_of_week': self.day_of_week,
+            'start_time': self.start_time.isoformat(),
+            'end_time': self.end_time.isoformat(),
+            'deleted': self.deleted
+        }
 
 
 class Level(JsonModel):
