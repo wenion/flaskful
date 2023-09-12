@@ -6,7 +6,7 @@ from flask_jwt_extended import jwt_required, current_user
 from models import Level
 
 class LevelController(Resource):
-    @jwt_required()
+    # @jwt_required()
     def get(self):
         # print('current_user', current_user)
         levels = Level.find().all()
@@ -43,6 +43,10 @@ class LevelController(Resource):
                             help='This field cannot be left blank')
         parser.add_argument('abbreviation', type=str, required=True,
                             help='This field cannot be left blank')
+        parser.add_argument('start_age', type=str, required=True,
+                            help='This field cannot be left blank')
+        parser.add_argument('end_age', type=str, required=True,
+                            help='This field cannot be left blank')
         args = parser.parse_args()
         try:
             level = Level.get(pk)
@@ -53,6 +57,8 @@ class LevelController(Resource):
             level.name = args['name']
             level.level = args['name']
             level.abbreviation = args['abbreviation']
+            level.start_age = args['start_age']
+            level.end_age = args['end_age']
             level.deleted = 0
             level.save()
             print('final leve', level)
@@ -66,11 +72,17 @@ class LevelController(Resource):
                             help='This field cannot be left blank')
         parser.add_argument('abbreviation', type=str, required=True,
                             help='This field cannot be left blank')
+        parser.add_argument('start_age', type=str, required=True,
+                            help='This field cannot be left blank')
+        parser.add_argument('end_age', type=str, required=True,
+                            help='This field cannot be left blank')
         args = parser.parse_args()
         data = {
             'name': args['name'],
             'level': args['name'],
-            'abbreviation': args['abbreviation']
+            'abbreviation': args['abbreviation'],
+            'start_age': args['start_age'],
+            'end_age': args['end_age']
         }
 
         level = Level(**data)

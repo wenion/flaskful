@@ -4,10 +4,12 @@ from flask import jsonify
 from flask_jwt_extended import jwt_required, current_user
 
 from datetime import datetime, timezone
+from dateutil import parser as date_parser
+from dateutil.tz import tzutc
 from models import Location
 
 class LocationController(Resource):
-    @jwt_required()
+    # @jwt_required()
     def get(self):
         # print('current_user', current_user)
         locations = Location.find().all()
@@ -24,7 +26,6 @@ class LocationController(Resource):
     def delete(self, pk):
         try:
             location = Location.get(pk)
-            print(location)
         except NotFoundError:
             return {'status': 'error', 'error': repr(NotFoundError)}, 200
 
@@ -42,32 +43,31 @@ class LocationController(Resource):
                             help='This field cannot be left blank')
         parser.add_argument('address', type=str, required=True,
                             help='This field cannot be left blank')
-        parser.add_argument('day_of_week', type=str, required=True,
-                            help='This field cannot be left blank')
-        parser.add_argument('start_time', type=str, required=True,
-                            help='This field cannot be left blank')
-        parser.add_argument('end_time', type=str, required=True,
-                            help='This field cannot be left blank')
+        # parser.add_argument('day_of_week', type=str, required=True,
+        #                     help='This field cannot be left blank')
+        # parser.add_argument('start_time', type=str, required=True,
+        #                     help='This field cannot be left blank')
+        # parser.add_argument('end_time', type=str, required=True,
+        #                     help='This field cannot be left blank')
         args = parser.parse_args()
 
-        start_time = datetime.strptime(args['start_time'], "%Y-%m-%dT%H:%M:%S.%fZ")
-        start_time = start_time.replace(tzinfo=timezone.utc).astimezone(tz=None)
+        # start_time = datetime.strptime(args['start_time'], "%Y-%m-%dT%H:%M:%S.%fZ")
+        # start_time = start_time.replace(tzinfo=timezone.utc).astimezone(tz=None)
 
-        end_time = datetime.strptime(args['end_time'], "%Y-%m-%dT%H:%M:%S.%fZ")
-        end_time = end_time.replace(tzinfo=timezone.utc).astimezone(tz=None)
+        # end_time = datetime.strptime(args['end_time'], "%Y-%m-%dT%H:%M:%S.%fZ")
+        # end_time = end_time.replace(tzinfo=timezone.utc).astimezone(tz=None)
 
         try:
             location = Location.get(pk)
-            print(location)
         except NotFoundError:
             return {'status': 'error', 'error': repr(NotFoundError)}, 400
 
         location.name = args['name']
         location.abbreviation = args['abbreviation']
         location.address = args['address']
-        location.day_of_week = args['day_of_week']
-        location.start_time = start_time
-        location.end_time = end_time
+        # location.day_of_week = args['day_of_week']
+        # location.start_time = start_time
+        # location.end_time = end_time
         location.deleted = 0
         location.save()
 
@@ -82,26 +82,28 @@ class LocationController(Resource):
                             help='This field cannot be left blank')
         parser.add_argument('address', type=str, required=True,
                             help='This field cannot be left blank')
-        parser.add_argument('day_of_week', type=str, required=True,
-                            help='This field cannot be left blank')
-        parser.add_argument('start_time', type=str, required=True,
-                            help='This field cannot be left blank')
-        parser.add_argument('end_time', type=str, required=True,
-                            help='This field cannot be left blank')
+        # parser.add_argument('day_of_week', type=str, required=True,
+        #                     help='This field cannot be left blank')
+        # parser.add_argument('start_time', type=str, required=True,
+        #                     help='This field cannot be left blank')
+        # parser.add_argument('end_time', type=str, required=True,
+        #                     help='This field cannot be left blank')
         args = parser.parse_args()
 
-        start_time = datetime.strptime(args['start_time'], "%Y-%m-%dT%H:%M:%S.%fZ")
-        start_time = start_time.replace(tzinfo=timezone.utc).astimezone(tz=None)
+        # start_time = datetime.strptime(args['start_time'], "%Y-%m-%dT%H:%M:%S.%fZ")
+        # start_time = date_parser.parse(args['start_time'])
+        # start_time = start_time.replace(tzinfo=timezone.utc).astimezone(tz=None)
 
-        end_time = datetime.strptime(args['end_time'], "%Y-%m-%dT%H:%M:%S.%fZ")
-        end_time = end_time.replace(tzinfo=timezone.utc).astimezone(tz=None)
+        # end_time = datetime.strptime(args['end_time'], "%Y-%m-%dT%H:%M:%S.%fZ")
+        # end_time = date_parser.parse(args['end_time']).replace(tzinfo=tzutc())
+        # end_time = end_time.replace(tzinfo=timezone.utc).astimezone(tz=None)
         data = {
             'name': args['name'],
             'abbreviation': args['abbreviation'],
             'address': args['address'],
-            'day_of_week': args['day_of_week'],
-            'start_time': start_time,
-            'end_time': end_time,
+            # 'day_of_week': args['day_of_week'],
+            # 'start_time': start_time,
+            # 'end_time': end_time,
         }
 
         location = Location(**data)

@@ -3,12 +3,13 @@ from redis_om.model import NotFoundError
 from flask import jsonify
 from flask_jwt_extended import jwt_required, current_user
 
-from datetime import datetime, timezone, date
+from dateutil import parser as date_parser
+from dateutil.tz import tzutc
 import pytz
 from models import Term
 
 class TermController(Resource):
-    @jwt_required()
+    # @jwt_required()
     def get(self):
         # print('current_user', current_user)
         terms = Term.find().all()
@@ -54,11 +55,15 @@ class TermController(Resource):
         except NotFoundError:
             return {'status': 'error', 'error': repr(NotFoundError)}, 400
         
-        start_day = datetime.strptime(args['start_day'], "%Y-%m-%dT%H:%M:%S.%fZ")
-        end_day = datetime.strptime(args['end_day'], "%Y-%m-%dT%H:%M:%S.%fZ")
+        # start_day = datetime.strptime(args['start_day'], "%Y-%m-%dT%H:%M:%S.%fZ")
+        # end_day = datetime.strptime(args['end_day'], "%Y-%m-%dT%H:%M:%S.%fZ")
 
-        start_day = start_day.replace(tzinfo=timezone.utc).astimezone(tz=None).date()
-        end_day = end_day.replace(tzinfo=timezone.utc).astimezone(tz=None).date()
+        # start_day = start_day.replace(tzinfo=timezone.utc).astimezone(tz=None).date()
+        # end_day = end_day.replace(tzinfo=timezone.utc).astimezone(tz=None).date()
+        print("start", args['start_day'])
+        print("end",args['end_day'])
+        start_day = date_parser.parse(args['start_day'])#.replace(tzinfo=tzutc())
+        end_day = date_parser.parse(args['end_day'])#.replace(tzinfo=tzutc())
 
         term.name = args['name']
         term.year = args['year']
@@ -69,6 +74,7 @@ class TermController(Resource):
         term.save()
 
         return {'status': 'ok', 'data': term.dict()}
+        # return {'status': 'ok', 'data': []}
 
     @jwt_required()
     def post(self):
@@ -85,11 +91,17 @@ class TermController(Resource):
                             help='This field cannot be left blank')
         args = parser.parse_args()
 
-        start_day = datetime.strptime(args['start_day'], "%Y-%m-%dT%H:%M:%S.%fZ")
-        end_day = datetime.strptime(args['end_day'], "%Y-%m-%dT%H:%M:%S.%fZ")
+        print("post", args['start_day'])
 
-        start_day = start_day.replace(tzinfo=timezone.utc).astimezone(tz=None).date()
-        end_day = end_day.replace(tzinfo=timezone.utc).astimezone(tz=None).date()
+        # start_day = datetime.strptime(args['start_day'], "%Y-%m-%dT%H:%M:%S.%fZ")
+        # end_day = datetime.strptime(args['end_day'], "%Y-%m-%dT%H:%M:%S.%fZ")
+
+        # start_day = start_day.replace(tzinfo=timezone.utc).astimezone(tz=None).date()
+        # end_day = end_day.replace(tzinfo=timezone.utc).astimezone(tz=None).date()
+        start_day = date_parser.parse(args['start_day'])#.replace(tzinfo=tzutc())
+        end_day = date_parser.parse(args['end_day'])#.replace(tzinfo=tzutc())
+        print("start", start_day)
+        print("start", start_day.astimezone(pytz.timezone("Australia/Sydney")))
 
         data = {
             'name': args['name'],

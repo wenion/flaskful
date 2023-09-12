@@ -84,7 +84,7 @@ class ClassItemController(Resource):
         args = parser.parse_args()
 
         rate = 11.11
-        gst_included = float(args['current_price']) * rate /100
+        gst_included = round(float(args['current_price']) * rate /100)
 
         print("args", args)
 

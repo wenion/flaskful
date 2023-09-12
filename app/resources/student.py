@@ -39,6 +39,10 @@ class StudentController(Resource):
                             help='This field cannot be left blank')
         parser.add_argument('phone', type=str, required=True,
                             help='This field cannot be left blank')
+        parser.add_argument('name', type=str, required=True,
+                            help='This field cannot be left blank')
+        parser.add_argument('phone', type=str, required=True,
+                            help='This field cannot be left blank')
         args = parser.parse_args()
         try:
             student = Student.get(pk)
@@ -56,9 +60,17 @@ class StudentController(Resource):
     @jwt_required()
     def post(self):
         parser = reqparse.RequestParser()
-        parser.add_argument('name', type=str, required=True,
+        parser.add_argument('given_name', type=str, required=True,
+                            help='This field cannot be left blank')
+        parser.add_argument('surname', type=str, required=True,
+                            help='This field cannot be left blank')
+        parser.add_argument('dob', type=str, required=True,
+                            help='This field cannot be left blank')
+        parser.add_argument('email', type=str, required=True,
                             help='This field cannot be left blank')
         parser.add_argument('phone', type=str, required=True,
+                            help='This field cannot be left blank')
+        parser.add_argument('wechat', type=str, required=True,
                             help='This field cannot be left blank')
         args = parser.parse_args()
 

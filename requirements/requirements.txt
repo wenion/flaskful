@@ -7,3 +7,4 @@ flask_httpauth==4.8.0
 flask_restful==0.3.10
 flask-cors==4.0.0
 flask_jwt_extended==4.5.2
+python-dateutil==2.8.2
