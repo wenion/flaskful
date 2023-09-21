@@ -7,16 +7,16 @@ import datetime
 from models import ClassItem
 
 class ClassItemController(Resource):
-    @jwt_required()
+    # @jwt_required()
     def get(self):
         # print('current_user', current_user)
-        class_items = ClassItem.find().all()
+        class_items = ClassItem.find(ClassItem.deleted == 0).sort_by('id').all()
 
         class_item_dict =[]
 
         for class_item in class_items:
-            if not class_item.deleted:
-                class_item_dict.append(class_item.dict())
+            # if not class_item.deleted:
+            class_item_dict.append(class_item.dict())
 
         return {'status': 'ok', 'data': class_item_dict}
 

@@ -9,16 +9,12 @@ class LevelController(Resource):
     # @jwt_required()
     def get(self):
         # print('current_user', current_user)
-        levels = Level.find().all()
+        levels = Level.find(Level.deleted == 0).sort_by('id').all()
 
         level_dict =[]
 
         for level in levels:
-            if not level.deleted:
-                level_item = level.dict()
-                level_item['level'] = level_item['name']
-                # level_item.pop('name')
-                level_dict.append(level_item)
+            level_dict.append(level.dict())
 
         return {'status': 'ok', 'data': level_dict}
 
@@ -47,7 +43,10 @@ class LevelController(Resource):
                             help='This field cannot be left blank')
         parser.add_argument('end_age', type=str, required=True,
                             help='This field cannot be left blank')
+        parser.add_argument('display', type=int, required=True,
+                            help='This field cannot be left blank')
         args = parser.parse_args()
+
         try:
             level = Level.get(pk)
             print(level)
@@ -59,9 +58,10 @@ class LevelController(Resource):
             level.abbreviation = args['abbreviation']
             level.start_age = args['start_age']
             level.end_age = args['end_age']
+            level.display = args['display']
             level.deleted = 0
             level.save()
-            print('final leve', level)
+            # print('final leve', level)
 
             return {'status': 'ok', 'data': level.dict()}
 
@@ -78,6 +78,7 @@ class LevelController(Resource):
                             help='This field cannot be left blank')
         args = parser.parse_args()
         data = {
+            'id': len(Level.find().all()) + 1,
             'name': args['name'],
             'level': args['name'],
             'abbreviation': args['abbreviation'],

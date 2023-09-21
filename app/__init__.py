@@ -17,6 +17,7 @@ from resources.teacher import TeacherController
 from resources.student import StudentController
 from resources.unchecked import UncheckedController
 from resources.class_option import ClassOptionController
+from app.resources.plan_lesson import PlanLessonController
 from models import User
 
 # mail = Mail()
@@ -51,6 +52,7 @@ def create_app():
     api.add_resource(StudentController, '/student', '/student/<pk>', endpoint='student_ep')
     api.add_resource(UncheckedController, '/unchecked', '/unchecked/<pk>', endpoint='unchecked_ep')
     api.add_resource(ClassOptionController, '/class-option', '/class-option/<pk>', endpoint='class-option_ep')
+    api.add_resource(PlanLessonController, '/plan-lesson', '/plan-lesson/<pk>', endpoint='plan-lesson_ep')
 
     jwt.init_app(app)
 

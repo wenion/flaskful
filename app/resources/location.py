@@ -12,13 +12,13 @@ class LocationController(Resource):
     # @jwt_required()
     def get(self):
         # print('current_user', current_user)
-        locations = Location.find().all()
+        locations = Location.find(Location.deleted == 0).sort_by('id').all()# page(0, 5)
 
         location_dict =[]
 
         for location in locations:
-            if not location.deleted:
-                location_dict.append(location.dict())
+            # if not location.deleted:
+            location_dict.append(location.dict())
 
         return {'status': 'ok', 'data': location_dict}
 
@@ -43,12 +43,8 @@ class LocationController(Resource):
                             help='This field cannot be left blank')
         parser.add_argument('address', type=str, required=True,
                             help='This field cannot be left blank')
-        # parser.add_argument('day_of_week', type=str, required=True,
-        #                     help='This field cannot be left blank')
-        # parser.add_argument('start_time', type=str, required=True,
-        #                     help='This field cannot be left blank')
-        # parser.add_argument('end_time', type=str, required=True,
-        #                     help='This field cannot be left blank')
+        parser.add_argument('display', type=int, required=True,
+                            help='This field cannot be left blank')
         args = parser.parse_args()
 
         # start_time = datetime.strptime(args['start_time'], "%Y-%m-%dT%H:%M:%S.%fZ")
@@ -65,6 +61,7 @@ class LocationController(Resource):
         location.name = args['name']
         location.abbreviation = args['abbreviation']
         location.address = args['address']
+        location.display = args['display']
         # location.day_of_week = args['day_of_week']
         # location.start_time = start_time
         # location.end_time = end_time
@@ -98,12 +95,10 @@ class LocationController(Resource):
         # end_time = date_parser.parse(args['end_time']).replace(tzinfo=tzutc())
         # end_time = end_time.replace(tzinfo=timezone.utc).astimezone(tz=None)
         data = {
+            'id': len(Location.find().all()) + 1,
             'name': args['name'],
             'abbreviation': args['abbreviation'],
             'address': args['address'],
-            # 'day_of_week': args['day_of_week'],
-            # 'start_time': start_time,
-            # 'end_time': end_time,
         }
 
         location = Location(**data)

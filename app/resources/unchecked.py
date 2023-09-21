@@ -88,11 +88,11 @@ class UncheckedController(Resource):
         parser.add_argument('wechat', type=str, required=True,
                             help='This field cannot be left blank')
 
+        parser.add_argument('level', type=str, required=True,
+                            help='This field cannot be left blank')
         parser.add_argument('location', type=list[dict], required=True,
                             help='This field cannot be left blank', location='json')
-        parser.add_argument('terms', type=list[dict], required=True,
-                            help='This field cannot be left blank', location='json')
-        parser.add_argument('level', type=str, required=True,
+        parser.add_argument('term', type=str, required=True,
                             help='This field cannot be left blank')
         parser.add_argument('email', type=str, required=True,
                             help='This field cannot be left blank')
@@ -132,19 +132,20 @@ class UncheckedController(Resource):
         # handle different class option
         for class_option in args['location']:
             # print("terms", args['terms'])
-            terms = []
-            for term in args['terms']:
-                terms.append(term['value'])
-            print("terms", terms)
+            # terms = []
+            # for term in args['terms']:
+            #     terms.append(term['value'])
+            # print("terms", terms)
             data = {
+                'id': len(Unchecked.find().all()) + 1,
                 'first_name': args['first_name'],
                 'last_name': args['last_name'],
                 'dob': dob,
                 'gender': args['gender'],
                 'wechat': args['wechat'],
 
-                'terms': terms,
-                'class_option': class_option['class_option_pk'],
+                'term': args['term'],
+                'class_option': class_option['value'],
                 'level': args['level'],
                 'email': args['email'],
                 'phone': args['phone'],
@@ -159,15 +160,14 @@ class UncheckedController(Resource):
                 'verify': 0,
                 'checked': 0,
                 'deleted': 0,
+                'student': '',
+                'plan_lesson': '',
                 'created': created,
                 'updated': created,
             }
-            print("before", data, '\n\n')
 
             unchecked = Unchecked(**data)
             unchecked.save()
             ret.append(unchecked.dict())
-
-        print("unchecked", ret)
 
         return {'status': 'ok', 'data': ret}

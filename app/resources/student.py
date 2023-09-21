@@ -3,20 +3,18 @@ from redis_om.model import NotFoundError
 from flask import jsonify
 from flask_jwt_extended import jwt_required, current_user
 
-import datetime
+from datetime import datetime, timezone
 from models import Student
 
 class StudentController(Resource):
     @jwt_required()
     def get(self):
-        students = Student.find().all()
+        students = Student.find(Student.deleted == 0).sort_by('id').all()
 
         student_dict =[]
 
         for student in students:
-            print(student)
-            if not student.deleted:
-                student_dict.append(student.dict())
+            student_dict.append(student.dict())
 
         return {'status': 'ok', 'data': student_dict}
 
@@ -60,24 +58,48 @@ class StudentController(Resource):
     @jwt_required()
     def post(self):
         parser = reqparse.RequestParser()
-        parser.add_argument('given_name', type=str, required=True,
+        parser.add_argument('first_name', type=str, required=True,
                             help='This field cannot be left blank')
-        parser.add_argument('surname', type=str, required=True,
+        parser.add_argument('last_name', type=str, required=True,
                             help='This field cannot be left blank')
         parser.add_argument('dob', type=str, required=True,
+                            help='This field cannot be left blank')
+        parser.add_argument('gender', type=str, required=True,
+                            help='This field cannot be left blank')
+        parser.add_argument('wechat', type=str, required=True,
                             help='This field cannot be left blank')
         parser.add_argument('email', type=str, required=True,
                             help='This field cannot be left blank')
         parser.add_argument('phone', type=str, required=True,
                             help='This field cannot be left blank')
-        parser.add_argument('wechat', type=str, required=True,
+        parser.add_argument('first_emergency_contact', type=str, required=True,
+                            help='This field cannot be left blank')
+        parser.add_argument('second_emergency_contact', type=str, required=True,
+                            help='This field cannot be left blank')
+        parser.add_argument('referer', type=str, required=True,
                             help='This field cannot be left blank')
         args = parser.parse_args()
 
+        dob = datetime.strptime(args['dob'], "%Y-%m-%dT%H:%M:%S.%fZ")
+        dob = dob.replace(tzinfo=timezone.utc).astimezone(tz=None)
+
+        created = datetime.now()
+        created = created.replace(tzinfo=timezone.utc).astimezone(tz=None)
+
         data = {
-            'name': args['name'],
+            'id': len(Student.find().all()) + 1,
+            'first_name': args['first_name'],
+            'last_name': args['last_name'],
+            'dob': dob,
+            'gender': args['gender'],
+            'wechat': args['wechat'],
+            'email': args['email'],
             'phone': args['phone'],
-            'class_list': []
+            'first_emergency_contact': args['first_emergency_contact'],
+            'second_emergency_contact': args['second_emergency_contact'],
+            'referer': args['referer'],
+            'created': created,
+            'updated': created,
         }
 
         student = Student(**data)
