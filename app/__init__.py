@@ -18,7 +18,7 @@ from resources.teacher import TeacherController
 from resources.student import StudentController
 from resources.unchecked import UncheckedController
 from resources.class_option import ClassOptionController
-from app.resources.plan_lesson import PlanLessonController
+from resources.plan_lesson import PlanLessonController
 from models import User
 
 # mail = Mail()

@@ -8,15 +8,13 @@ from authenticate import RoleType, Permission
 from models import User, Teacher, Student
 
 class AuthController(Resource):
+    # Login
     def post(self):
         parser = reqparse.RequestParser()
         parser.add_argument('email', type=str, required=True, location='form',
                             help='This field cannot be left blank')
         parser.add_argument('password', type=str, required=True, location='form',
                             help='This field cannot be left blank')
-
-        # parser.add_argument('email')
-        # parser.add_argument('password')
 
         args = parser.parse_args()
         # print('args', args)
@@ -27,9 +25,10 @@ class AuthController(Resource):
         exist = User.find(User.email == user_auth).all()
         # print('exist', exist)
         if not len(exist):
-            exist = User.find(User.phone == user_auth).all()
-            if not len(exist):
-                return {'status': '', 'message': 'Wrong username or password.'}, 401
+            return {'status': '', 'message': 'Wrong username or password.'}, 401
+            # exist = User.find(User.phone == user_auth).all()
+            # if not len(exist):
+            #     return {'status': '', 'message': 'Wrong username or password.'}, 401
 
         if len(exist) and exist[0]:
             user = exist[0]

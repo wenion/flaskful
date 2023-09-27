@@ -57,8 +57,8 @@ class UserController(Resource):
         parser = reqparse.RequestParser()
         parser.add_argument('account_name', type=str, required=True,
                             help='This field cannot be left blank')
-        parser.add_argument('email', type=str, required=True,
-                            help='This field cannot be left blank')
+        # parser.add_argument('email', type=str, required=True,
+        #                     help='This field cannot be left blank')
         parser.add_argument('phone', type=str, required=True,
                             help='This field cannot be left blank')
         parser.add_argument('auth', type=dict, required=True,
