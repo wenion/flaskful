@@ -48,12 +48,36 @@ class PlanLessonController(Resource):
             (Lesson.deleted == 0)
         ).sort_by('id').all()
 
-        plan_lesson_dict = []
+        plan_lesson_list = []
+        term_dict = {}
+        term_title = []
 
         for plan_lesson in plan_lessons:
-            plan_lesson_dict.append(plan_lesson.dict())
+            plan_lesson_dict = plan_lesson.dict()
 
-        return {'status': 'ok', 'data': {'request': class_option, 'payload': plan_lesson_dict}}
+            try:
+                term = Term.get(plan_lesson.term_pk).dict()
+            except NotFoundError:
+                term = {
+                    'label': 'Term field is invaild',
+                    'value': 'invaild'
+                    }
+            print('term', term)
+            if plan_lesson.term_pk not in term_dict:
+                term_title.append(term)
+                term_dict[plan_lesson.term_pk] = []
+                term_dict[plan_lesson.term_pk].append(plan_lesson_dict)
+            else:
+                term_dict[plan_lesson.term_pk].append(plan_lesson_dict)
+            plan_lesson_list.append(plan_lesson_dict)
+
+        return {'status': 'ok',
+            'data': {
+                'request': class_option,
+                'payload': plan_lesson_list,
+                'terms': term_dict,
+                'term_title': term_title,
+                }}
 
     @jwt_required()
     def delete(self, pk):

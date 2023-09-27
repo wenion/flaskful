@@ -1,9 +1,11 @@
-from flask_restful import Resource, reqparse
+from flask_restful import Resource, reqparse, abort
+from redis_om.model import NotFoundError
 from flask import jsonify
-from flask_jwt_extended import create_access_token
+from flask_jwt_extended import create_access_token, jwt_required
 
-import datetime
-from models import User
+from datetime import datetime, timezone, timedelta
+from authenticate import RoleType, Permission
+from models import User, Teacher, Student
 
 class AuthController(Resource):
     def post(self):
@@ -31,18 +33,58 @@ class AuthController(Resource):
 
         if len(exist) and exist[0]:
             user = exist[0]
+            try:
+                if user.role_type == RoleType.TEACHER:
+                    binding_account = Teacher.get(user.binding_account).dict()
+                elif user.role_type == RoleType.STUDENT:
+                    binding_account = Student.get(user.binding_account).dict()
+                else:
+                    binding_account = {
+                        'label': 'N/A',
+                        'value': '0'
+                    }
+            except NotFoundError:
+                binding_account = {
+                    'label': 'Binding Account field is invaild',
+                    'value': '0'
+                }
+            user_item = user.dict()
+            user_item['binding_account'] = binding_account
+
             authorized = user.check_password(password)
             # print('authorized', authorized)
             if authorized:
-                expires = datetime.timedelta(days=7)
+                expires = timedelta(days=7)
                 access_token = create_access_token(identity=user, expires_delta=expires)
                 data = {
-                    # 'userid': user.userid,
-                    'name': user.name,
-                    'email': user.email,
-                    'phone': user.phone,
+                    'profile': user_item,
                     'access_token': access_token,
                 }
                 return {'status': '', 'message': 'Login successfully.', 'data': data}, 200
 
         return {'status': '', 'message': 'Wrong username or password.'}, 401
+
+
+class ProfileController(Resource):
+    @jwt_required()
+    def get(self, pk):
+        print("pk", pk)
+
+        return {'status': 'ok', 'data': []}
+
+    @jwt_required()
+    def delete(self, pk):
+        
+
+        return {'status': 'ok', 'data': []}
+
+    @jwt_required()
+    def put(self, pk):
+
+        return {'status': 'ok', 'data': []}
+
+    @jwt_required()
+    def post(self):
+        parser = reqparse.RequestParser()
+
+        return {'status': 'ok', 'data': []}

@@ -1,6 +1,8 @@
-from flask_restful import Resource, reqparse
+from flask_restful import Resource, reqparse, abort
 from flask import jsonify
 
+from datetime import datetime, timezone
+from authenticate import RoleType, Permission
 from models import User
 
 class SignupController(Resource):
@@ -14,6 +16,7 @@ class SignupController(Resource):
     #                     help='This field cannot be left blank')
 
     def post(self):
+        print("post>>>")
         parser = reqparse.RequestParser()
         parser.add_argument('name', type=str, required=True, location='form',
                             help='This field cannot be left blank')
@@ -26,15 +29,23 @@ class SignupController(Resource):
 
         exist = User.find(User.email == args['email'].lower()).all()
         if len(exist) > 0:
-            return {'status': 'error', 'message': 'User has already been created.', 'data': {}}, 202
-        
+            return abort(400, message='User already exists')
+
+        created = datetime.now().replace(tzinfo=timezone.utc).astimezone(tz=None)
         data = {
-            'name': args['name'],
+            'id': len(User.find().all()) + 1,
+            'account_name': args['name'],
             'email': args['email'].lower(),
             'phone': '',
-            'password': User.hash_password(args['password']),}
+            'password': User.hash_password(args['password']),
+            'auth': Permission.MINIMUM,
+            'role_type': RoleType.USER,
+            'binding_account': '0',
+            'created': created,
+            'updated': created,
+            }
 
         user = User(**data)
         user.save()
 
-        return {'status': 'ok', 'message': 'user has been created successfully.', 'data': {}}, 201
+        return {'status': 'ok', 'message': 'user has been created successfully.', 'data': user.dict()}, 201

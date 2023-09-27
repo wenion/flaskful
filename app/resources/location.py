@@ -1,4 +1,5 @@
 from flask_restful import Resource, reqparse
+from authenticate import authenticate, admin_required
 from redis_om.model import NotFoundError
 from flask import jsonify
 from flask_jwt_extended import jwt_required, current_user
@@ -9,7 +10,10 @@ from dateutil.tz import tzutc
 from models import Location
 
 class LocationController(Resource):
+    # method_decorators = [authenticate]
+
     # @jwt_required()
+    @admin_required()
     def get(self):
         # print('current_user', current_user)
         locations = Location.find(Location.deleted == 0).sort_by('id').all()# page(0, 5)

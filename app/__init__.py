@@ -8,7 +8,8 @@ from flask_jwt_extended import JWTManager
 from redis_om import Migrator
 
 from resources.account_signup import SignupController
-from resources.accounts import AuthController
+from resources.user import UserController
+from resources.accounts import AuthController, ProfileController
 from resources.location import LocationController
 from resources.term import TermController
 from resources.level import LevelController
@@ -30,6 +31,8 @@ def user_identity_lookup(user):
 
 @jwt.user_lookup_loader
 def user_lookup_callback(_jwt_header, jwt_data):
+    print("user_lookup_callback", _jwt_header)
+    print("user_lookup_callback ", jwt_data)
     pk = jwt_data["sub"]
     return User.get(pk)
 
@@ -44,6 +47,8 @@ def create_app():
     api = Api(app)
     api.add_resource(SignupController, '/signup')
     api.add_resource(AuthController, '/login')
+    api.add_resource(ProfileController, '/profile', '/profile/<pk>', endpoint='profile_ep')
+    api.add_resource(UserController, '/user', '/user/<pk>', endpoint='user_ep')
     api.add_resource(LocationController, '/location', '/location/<pk>', endpoint='location_ep')
     api.add_resource(TermController, '/term', '/term/<pk>', endpoint='term_ep')
     api.add_resource(LevelController, '/level', '/level/<pk>', endpoint='level_ep')

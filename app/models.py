@@ -6,6 +6,7 @@ from redis_om.model import NotFoundError
 from pydantic import NonNegativeInt
 from typing import Optional, List
 from flask_bcrypt import generate_password_hash, check_password_hash
+from authenticate import Permission, RoleType
 
 def get_abbr_from_day(day_of_week):
     days = {
@@ -31,15 +32,22 @@ def get_num_from_day(day_of_week):
         }
     return days[day_of_week] 
 
+
 class User(JsonModel):
     class Meta:
         global_key_prefix = 's'
         model_key_prefix = 'User'
-    # userid: str = Field(index=True)
-    name: str = Field(index=True)
+    id: int = Field(index=True, sortable=True)
+    account_name: str = Field(index=True)
     email: str = Field(index=True)
     phone: str = Field(index=True)
     password: str = Field(index=True)
+    auth: int
+    role_type: int
+    binding_account: str = Field(index=True)
+    created: datetime.datetime
+    updated: datetime.datetime
+    display: int = Field(default=1)
     deleted: int = Field(index=True, default=0)
 
     def hash_password(password):
@@ -47,7 +55,39 @@ class User(JsonModel):
 
     def check_password(self, password):
         return check_password_hash(self.password, password)
-
+    
+    def dict(self):
+        # try:
+        #     if self.role_type == RoleType.TEACHER:
+        #         binding_account = Teacher.get(self.binding_account).dict()
+        #     elif self.role_type == RoleType.STUDENT:
+        #         binding_account = Student.get(self.binding_account).dict()
+        #     else:
+        #         binding_account = {
+        #             'label': '',
+        #             'value': ''
+        #         }
+        # except NotFoundError:
+        #     binding_account = {
+        #         'label': 'Binding Account field is invaild',
+        #         'value': ''
+        #     }
+        return {
+            'pk': self.pk,
+            'id': self.id,
+            'value': self.pk,
+            'label': self.account_name + ' ('+ self.phone + ')',
+            'account_name': self.account_name,
+            'email': self.email,
+            'phone': self.phone,
+            'auth': { 'value': self.auth, 'label': Permission(self.auth).name },
+            'role_type': {'value': self.role_type, 'label': RoleType(self.role_type).name},
+            'binding_account': self.binding_account,
+            # 'created': self.created.isoformat(),
+            # 'updated': self.updated.isoformat(),
+            'display': self.display,
+            'deleted': self.deleted
+        }
 
 class Location(JsonModel):
     class Meta:
@@ -125,10 +165,59 @@ class Teacher(JsonModel):
     class Meta:
         global_key_prefix = 's'
         model_key_prefix = 'Teacher'
+    id: int = Field(sortable=True)
     name: str = Field(index=True)
+    dob: datetime.datetime
+    email: str = Field(index=True)
     phone: str = Field(index=True)
-    class_list: List[str]
+    wechat: str = Field(index=True)
+    lessons: List[str]
+    role_type: int
+    user_account: str = Field(index=True)
+    created: datetime.datetime
+    updated: datetime.datetime
+    display: int = Field(default=1)
     deleted: int = Field(index=True, default=0)
+
+    def dict(self):
+        try:
+            user = User.get(self.user_account).dict()
+        except NotFoundError:
+            user = {
+                'label': 'User field is invaild',
+                'value': 'invaild'
+            }
+        lessons_dict = []
+        for lesson_pk in self.lessons:
+            try:
+                lesson = Lesson.get(lesson_pk).dict()
+            except NotFoundError:
+                lesson = {
+                    'label': 'Lesson field is invaild',
+                    'value': lesson_pk
+                }
+            lessons_dict.append(lesson)
+
+        return {
+            'pk': self.pk,
+            'id': self.id,
+            'value': self.pk,
+            'label': self.name + ' ('+ self.phone + ')',
+            'name': self.name,
+            'dob': self.dob.isoformat(),
+            'email': self.email,
+            'phone': self.phone,
+            'wechat': self.wechat,
+
+            'role_type': {'value': self.role_type, 'label': RoleType(self.role_type).name},
+            'user_account': user,
+            'lessons': lessons_dict,
+
+            'created': self.created.isoformat(),
+            'updated': self.updated.isoformat(),
+            'display': self.display,
+            'deleted': self.deleted
+        }
 
 
 class Student(JsonModel):
@@ -139,6 +228,7 @@ class Student(JsonModel):
     first_name: str = Field(index=True)
     last_name: str = Field(index=True)
     dob: datetime.datetime
+    start_date: datetime.datetime
     gender: str = Field(index=True)
     wechat: str = Field(index=True)
     email: str = Field(index=True)
@@ -147,14 +237,35 @@ class Student(JsonModel):
     second_emergency_contact:  str = Field(index=True)
 
     referer: str = Field(index=True)
-    # remark: str
-    # class_list: List[str]
+    message: str = Field(index=True)
+    memo: str = Field(index=True)
+    lessons: List[str]
+    role_type: int
+    user_account: str = Field(index=True)
     created: datetime.datetime
     updated: datetime.datetime
     display: int = Field(default=1)
     deleted: int = Field(index=True, default=0)
 
     def dict(self):
+        try:
+            user = User.get(self.user_account).dict()
+        except NotFoundError:
+            user = {
+                'label': 'User field is invaild',
+                'value': 'invaild'
+            }
+        lessons_dict = []
+        for lesson_pk in self.lessons:
+            try:
+                lesson = Lesson.get(lesson_pk).dict()
+            except NotFoundError:
+                lesson = {
+                    'label': 'Lesson field is invaild',
+                    'value': lesson_pk
+                }
+            lessons_dict.append(lesson)
+
         return {
             'pk': self.pk,
             'id': self.id,
@@ -163,7 +274,8 @@ class Student(JsonModel):
             'first_name': self.first_name,
             'last_name': self.last_name,
             'dob': self.dob.isoformat(),
-            'gender': self.gender,
+            'start_date': self.start_date.isoformat(),
+            'gender': { 'value': self.gender, 'label': self.gender },
             'wechat': self.wechat,
             'email': self.email,
             'phone': self.phone,
@@ -171,6 +283,12 @@ class Student(JsonModel):
             'first_emergency_contact': self.first_emergency_contact,
             'second_emergency_contact': self.second_emergency_contact,
             'referer': self.referer,
+            'message': self.message,
+            'memo': self.memo,
+
+            'role_type': {'value': self.role_type, 'label': RoleType(self.role_type).name},
+            'user_account': user, #self.user_account,
+            'lessons': lessons_dict,
             'created': self.created.isoformat(),
             'updated': self.updated.isoformat(),
             'display': self.display,
@@ -229,6 +347,7 @@ class Unchecked(JsonModel):
     referer: str = Field(index=True)
 
     message: str
+    memo: str
     checked: int = Field(index=True, default=0)
     verify: int = Field(index=True, default=0)
     status: str
@@ -263,37 +382,35 @@ class Unchecked(JsonModel):
 
         print("clas option", class_option)
 
-        # student
-        # plan_lesson
-
         return {
             'pk': self.pk,
             'id': self.id,
             'first_name': self.first_name,
             'last_name': self.last_name,
             'dob': self.dob.isoformat(),
-            'gender': self.gender,
+            'gender': { 'value': self.gender, 'label': self.gender },
             'wechat': self.wechat,
             'first_emergency_contact': self.first_emergency_contact,
             'second_emergency_contact': self.second_emergency_contact,
 
             'location': location,
             'level': level,
-            'term': self.term,
             'class_option': class_option,
+            'term': self.term,
             'email': self.email,
             'phone': self.phone,
             'find_us': self.find_us,
             'referer': self.referer,
 
             'verify': self.verify,
+            'checked': self.checked,
             'status': self.status,
             'message': self.message,
             'created': self.created.isoformat(),
             'updated': self.updated.isoformat(),
-            'student': "test",
-            'plan_lesson': "test",
-            # 'class_list': List[str],
+            'student': '',
+            'plan_lesson': '',
+            'memo': self.memo,
             'deleted': self.deleted
         }
 
@@ -379,7 +496,7 @@ class Lesson(JsonModel):
             class_option = {
                 'label': 'Class Option field is invaild',
                 'value': 'invaild'
-                }
+            }
 
         try:
             term = Term.get(self.term_pk).dict()
@@ -392,8 +509,8 @@ class Lesson(JsonModel):
             'pk': self.pk,
             'id': self.id,
             'value': self.pk,
-            # 'label': self.class_code + ' (' + class_option['start_time'].astimezone(pytz.timezone("Australia/Sydney")).isoformat() + \
-            #     '' + class_option['end_time'].astimezone(pytz.timezone("Australia/Sydney")).isoformat() + ')',
+            'label': class_option['label'] + ' week '+ str(self.week),
+            'week_label': 'week '+ str(self.week),
             'class_code': self.class_code,
             'class_option_pk': self.class_option_pk,
             'term_pk': self.term_pk,
