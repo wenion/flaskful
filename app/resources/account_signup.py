@@ -39,7 +39,7 @@ class SignupController(Resource):
             'phone': '',
             'password': User.hash_password(args['password']),
             'auth': Permission.LEVEL4,
-            'role_type': RoleType.USER,
+            'role_type': RoleType.OTHER,
             'binding_account': '0',
             'created': created,
             'updated': created,
