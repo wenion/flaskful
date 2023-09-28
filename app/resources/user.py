@@ -5,8 +5,8 @@ from redis_om.model import NotFoundError
 
 from datetime import datetime, timezone
 
-from models import User, Teacher, Student
-from authenticate import RoleType, Permission
+from app.models import User, Teacher, Student, UserRTeacher, UserRStudent
+from app.authenticate import RoleType, Permission
 
 class UserController(Resource):
     # @jwt_required()
@@ -15,24 +15,34 @@ class UserController(Resource):
         user_dict =[]
 
         for user in users:
-            try:
-                if user.role_type == RoleType.TEACHER:
-                    binding_account = Teacher.get(user.binding_account).dict()
-                elif user.role_type == RoleType.STUDENT:
-                    binding_account = Student.get(user.binding_account).dict()
-                else:
-                    binding_account = {
-                        'label': 'N/A',
-                        'value': '0'
-                    }
-            except NotFoundError:
-                binding_account = {
-                    'label': 'Binding Account field is invaild',
-                    'value': '0'
-                }
+            # try:
+            #     if user.role_type == RoleType.TEACHER:
+            #         binding_account = Teacher.get(user.binding_account).dict()
+            #     elif user.role_type == RoleType.STUDENT:
+            #         binding_account = Student.get(user.binding_account).dict()
+            #     else:
+            #         binding_account = {
+            #             'label': 'N/A',
+            #             'value': '0'
+            #         }
+            # except NotFoundError:
+            #     binding_account = {
+            #         'label': 'Binding Account field is invaild',
+            #         'value': '0'
+            #     }
+            if user.role_type == RoleType.TEACHER:
+                exist = UserRTeacher.find(UserRTeacher.user == user.pk).all()
+                if len(exist) > 0:
+                    teacher = Teacher.get(exist[0].teacher)
+                
+            elif user.role_type == RoleType.STUDENT:
+                t = UserRStudent.find(UserRStudent.user == user.pk).all()
+                print("sss", t)
+            
+            
 
             user_item = user.dict()
-            user_item['binding_account'] = binding_account
+            # user_item['binding_account'] = binding_account
 
             print("item", user_item)
             

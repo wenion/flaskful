@@ -4,7 +4,7 @@ from flask import jsonify
 from flask_jwt_extended import jwt_required, current_user
 
 from datetime import datetime, timezone
-from models import Unchecked, Lesson, Student
+from app.models import Unchecked, Lesson, Student
 import json
 
 class UncheckedController(Resource):

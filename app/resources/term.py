@@ -6,7 +6,7 @@ from flask_jwt_extended import jwt_required, current_user
 from dateutil import parser as date_parser
 from dateutil.tz import tzutc
 import pytz
-from models import Term
+from app.models import Term
 
 class TermController(Resource):
     # @jwt_required()

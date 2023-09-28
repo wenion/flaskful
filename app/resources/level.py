@@ -3,7 +3,7 @@ from redis_om.model import NotFoundError
 from flask import jsonify
 from flask_jwt_extended import jwt_required, current_user
 
-from models import Level
+from app.models import Level
 
 class LevelController(Resource):
     # @jwt_required()

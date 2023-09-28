@@ -1,5 +1,5 @@
 from flask_restful import Resource, reqparse
-from authenticate import authenticate, admin_required
+from app.authenticate import authenticate, admin_required
 from redis_om.model import NotFoundError
 from flask import jsonify
 from flask_jwt_extended import jwt_required, current_user
@@ -7,7 +7,7 @@ from flask_jwt_extended import jwt_required, current_user
 from datetime import datetime, timezone
 from dateutil import parser as date_parser
 from dateutil.tz import tzutc
-from models import Location
+from app.models import Location
 
 class LocationController(Resource):
     # method_decorators = [authenticate]

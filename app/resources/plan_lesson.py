@@ -9,7 +9,7 @@ from datetime import datetime, timezone, timedelta
 from dateutil import parser as date_parser
 from dateutil.tz import tzutc
 import pytz
-from models import Lesson, Term, ClassOption, get_num_from_day
+from app.models import Lesson, Term, ClassOption, get_num_from_day
 
 # def switch_week_of_day(week_of_day)
 

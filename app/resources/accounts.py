@@ -4,8 +4,8 @@ from flask import jsonify
 from flask_jwt_extended import create_access_token, jwt_required
 
 from datetime import datetime, timezone, timedelta
-from authenticate import RoleType, Permission
-from models import User, Teacher, Student
+from app.authenticate import RoleType, Permission
+from app.models import User, Teacher, Student
 
 class AuthController(Resource):
     # Login

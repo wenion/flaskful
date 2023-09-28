@@ -4,7 +4,7 @@ from flask import jsonify
 from flask_jwt_extended import jwt_required, current_user
 
 import datetime
-from models import ClassItem
+from app.models import ClassItem
 
 class ClassItemController(Resource):
     # @jwt_required()

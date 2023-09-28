@@ -4,8 +4,8 @@ from flask import jsonify
 from flask_jwt_extended import jwt_required, current_user
 
 from datetime import datetime, timezone
-from models import Student, User
-from authenticate import RoleType, Permission
+from app.models import Student, User
+from app.authenticate import RoleType, Permission
 
 class StudentController(Resource):
     @jwt_required()

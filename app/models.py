@@ -6,7 +6,7 @@ from redis_om.model import NotFoundError
 from pydantic import NonNegativeInt
 from typing import Optional, List
 from flask_bcrypt import generate_password_hash, check_password_hash
-from authenticate import Permission, RoleType
+from app.authenticate import Permission, RoleType
 
 def get_abbr_from_day(day_of_week):
     days = {
@@ -31,134 +31,6 @@ def get_num_from_day(day_of_week):
         'Sunday': 7,
         }
     return days[day_of_week] 
-
-
-class User(JsonModel):
-    class Meta:
-        global_key_prefix = 's'
-        model_key_prefix = 'User'
-    id: int = Field(index=True, sortable=True)
-    account_name: str = Field(index=True)
-    email: str = Field(index=True)
-    phone: str = Field(index=True)
-    password: str = Field(index=True)
-    auth: int
-    role_type: int
-    binding_account: str = Field(index=True)
-    created: datetime.datetime
-    updated: datetime.datetime
-    display: int = Field(default=1)
-    deleted: int = Field(index=True, default=0)
-
-    def hash_password(password):
-        return generate_password_hash(password).decode('utf8')
-
-    def check_password(self, password):
-        return check_password_hash(self.password, password)
-    
-    def dict(self):
-        # try:
-        #     if self.role_type == RoleType.TEACHER:
-        #         binding_account = Teacher.get(self.binding_account).dict()
-        #     elif self.role_type == RoleType.STUDENT:
-        #         binding_account = Student.get(self.binding_account).dict()
-        #     else:
-        #         binding_account = {
-        #             'label': '',
-        #             'value': ''
-        #         }
-        # except NotFoundError:
-        #     binding_account = {
-        #         'label': 'Binding Account field is invaild',
-        #         'value': ''
-        #     }
-        return {
-            'pk': self.pk,
-            'id': self.id,
-            'value': self.pk,
-            'label': self.account_name + ' ('+ self.phone + ')',
-            'account_name': self.account_name,
-            'email': self.email,
-            'phone': self.phone,
-            'auth': { 'value': self.auth, 'label': Permission(self.auth).name },
-            'role_type': {'value': self.role_type, 'label': RoleType(self.role_type).name},
-            'binding_account': self.binding_account,
-            # 'created': self.created.isoformat(),
-            # 'updated': self.updated.isoformat(),
-            'display': self.display,
-            'deleted': self.deleted
-        }
-
-class Location(JsonModel):
-    class Meta:
-        global_key_prefix = 's'
-        model_key_prefix = 'Location'
-    id: int = Field(index=True, sortable=True)
-    name: str = Field(index=True)
-    abbreviation: str = Field(index=True)
-    address: str = Field(index=True)
-    # day_of_week: str = Field(index=True)
-    # start_time: datetime.datetime
-    # end_time: datetime.datetime
-    display: int = Field(index=True, default=1)
-    deleted: int = Field(index=True, default=0)
-
-    def dict(self):
-        return {
-            'pk': self.pk,
-            'id': self.id,
-            'value': self.pk,
-            'label': self.abbreviation,
-            'name': self.name,
-            'abbreviation': self.abbreviation,
-            'address': self.address,
-            'display': self.display,
-            'deleted': self.deleted
-        }
-
-
-class Level(JsonModel):
-    class Meta:
-        global_key_prefix = 's'
-        model_key_prefix = 'Level'
-    id: int = Field(index=True, sortable=True)
-    name: str = Field(index=True)
-    level: str = Field(index=True)
-    abbreviation: str = Field(index=True)
-    start_age: str
-    end_age: str
-    display: int = Field(default=1)
-    deleted: int = Field(index=True, default=0)
-
-    def dict(self):
-        return {
-            'pk': self.pk,
-            'id': self.id,
-            'value': self.pk,
-            'label': self.abbreviation,
-            'name': self.name,
-            'level': self.level,
-            'start_age': self.start_age,
-            'end_age': self.end_age,
-            'abbreviation': self.abbreviation,
-            'display': self.display,
-            'deleted': self.deleted
-        }
-
-
-class ClassItem(JsonModel):
-    class Meta:
-        global_key_prefix = 's'
-        model_key_prefix = 'ClassItem'
-    id: int = Field(sortable=True)
-    item_no: str = Field(index=True)
-    item_name: str = Field(index=True)
-    current_price: float = Field(index=True)
-    rate: float = Field(index=True, default=1.1)
-    gst_included: float = Field(index=True)
-    comments: str = Field(index=True)
-    display: int = Field(index=True, default=1)
-    deleted: int = Field(index=True, default=0)
 
 
 class Teacher(JsonModel):
@@ -294,6 +166,151 @@ class Student(JsonModel):
             'display': self.display,
             'deleted': self.deleted
         }
+
+
+class User(JsonModel):
+    class Meta:
+        global_key_prefix = 's'
+        model_key_prefix = 'User'
+    id: int = Field(index=True, sortable=True)
+    account_name: str = Field(index=True)
+    email: str = Field(index=True)
+    phone: str = Field(index=True)
+    password: str = Field(index=True)
+    auth: int
+    role_type: int
+    binding_account: str = Field(index=True)
+    created: datetime.datetime
+    updated: datetime.datetime
+    display: int = Field(default=1)
+    deleted: int = Field(index=True, default=0)
+
+    def hash_password(password):
+        return generate_password_hash(password).decode('utf8')
+
+    def check_password(self, password):
+        return check_password_hash(self.password, password)
+    
+    def dict(self):
+        # try:
+        #     if self.role_type == RoleType.TEACHER:
+        #         binding_account = Teacher.get(self.binding_account).dict()
+        #     elif self.role_type == RoleType.STUDENT:
+        #         binding_account = Student.get(self.binding_account).dict()
+        #     else:
+        #         binding_account = {
+        #             'label': '',
+        #             'value': ''
+        #         }
+        # except NotFoundError:
+        #     binding_account = {
+        #         'label': 'Binding Account field is invaild',
+        #         'value': ''
+        #     }
+        return {
+            'pk': self.pk,
+            'id': self.id,
+            'value': self.pk,
+            'label': self.account_name + ' ('+ self.phone + ')',
+            'account_name': self.account_name,
+            'email': self.email,
+            'phone': self.phone,
+            'auth': { 'value': self.auth, 'label': Permission(self.auth).name },
+            'role_type': {'value': self.role_type, 'label': RoleType(self.role_type).name},
+            'binding_account': self.binding_account,
+            # 'created': self.created.isoformat(),
+            # 'updated': self.updated.isoformat(),
+            'display': self.display,
+            'deleted': self.deleted
+        }
+
+
+class UserRTeacher(JsonModel):
+    class Meta:
+        global_key_prefix = 'r'
+        model_key_prefix = 'UserRTeacher'
+    user: str = Field(index=True)
+    teacher: str = Field(index=True)
+
+
+class UserRStudent(JsonModel):
+    class Meta:
+        global_key_prefix = 'r'
+        model_key_prefix = 'UserRStudent'
+    user: str = Field(index=True)
+    student: str = Field(index=True)
+
+
+class Location(JsonModel):
+    class Meta:
+        global_key_prefix = 's'
+        model_key_prefix = 'Location'
+    id: int = Field(index=True, sortable=True)
+    name: str = Field(index=True)
+    abbreviation: str = Field(index=True)
+    address: str = Field(index=True)
+    # day_of_week: str = Field(index=True)
+    # start_time: datetime.datetime
+    # end_time: datetime.datetime
+    display: int = Field(index=True, default=1)
+    deleted: int = Field(index=True, default=0)
+
+    def dict(self):
+        return {
+            'pk': self.pk,
+            'id': self.id,
+            'value': self.pk,
+            'label': self.abbreviation,
+            'name': self.name,
+            'abbreviation': self.abbreviation,
+            'address': self.address,
+            'display': self.display,
+            'deleted': self.deleted
+        }
+
+
+class Level(JsonModel):
+    class Meta:
+        global_key_prefix = 's'
+        model_key_prefix = 'Level'
+    id: int = Field(index=True, sortable=True)
+    name: str = Field(index=True)
+    level: str = Field(index=True)
+    abbreviation: str = Field(index=True)
+    start_age: str
+    end_age: str
+    display: int = Field(default=1)
+    deleted: int = Field(index=True, default=0)
+
+    def dict(self):
+        return {
+            'pk': self.pk,
+            'id': self.id,
+            'value': self.pk,
+            'label': self.abbreviation,
+            'name': self.name,
+            'level': self.level,
+            'start_age': self.start_age,
+            'end_age': self.end_age,
+            'abbreviation': self.abbreviation,
+            'display': self.display,
+            'deleted': self.deleted
+        }
+
+
+class ClassItem(JsonModel):
+    class Meta:
+        global_key_prefix = 's'
+        model_key_prefix = 'ClassItem'
+    id: int = Field(sortable=True)
+    item_no: str = Field(index=True)
+    item_name: str = Field(index=True)
+    current_price: float = Field(index=True)
+    rate: float = Field(index=True, default=1.1)
+    gst_included: float = Field(index=True)
+    comments: str = Field(index=True)
+    display: int = Field(index=True, default=1)
+    deleted: int = Field(index=True, default=0)
 
 
 class Term(JsonModel):

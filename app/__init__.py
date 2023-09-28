@@ -7,19 +7,19 @@ from flask_jwt_extended import JWTManager
 # from flask_jwt_extended import user_lookup_loader
 from redis_om import Migrator
 
-from resources.account_signup import SignupController
-from resources.user import UserController
-from resources.accounts import AuthController, ProfileController
-from resources.location import LocationController
-from resources.term import TermController
-from resources.level import LevelController
-from resources.class_item import ClassItemController
-from resources.teacher import TeacherController
-from resources.student import StudentController
-from resources.unchecked import UncheckedController
-from resources.class_option import ClassOptionController
-from resources.plan_lesson import PlanLessonController
-from models import User
+from app.resources.account_signup import SignupController
+from app.resources.user import UserController
+from app.resources.accounts import AuthController, ProfileController
+from app.resources.location import LocationController
+from app.resources.term import TermController
+from app.resources.level import LevelController
+from app.resources.class_item import ClassItemController
+from app.resources.teacher import TeacherController
+from app.resources.student import StudentController
+from app.resources.unchecked import UncheckedController
+from app.resources.class_option import ClassOptionController
+from app.resources.plan_lesson import PlanLessonController
+from app.models import User
 
 # mail = Mail()
 auth = HTTPBasicAuth()
@@ -31,8 +31,8 @@ def user_identity_lookup(user):
 
 @jwt.user_lookup_loader
 def user_lookup_callback(_jwt_header, jwt_data):
-    print("user_lookup_callback", _jwt_header)
-    print("user_lookup_callback ", jwt_data)
+    # print("user_lookup_callback", _jwt_header)
+    # print("user_lookup_callback ", jwt_data)
     pk = jwt_data["sub"]
     return User.get(pk)
 

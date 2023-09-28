@@ -8,7 +8,7 @@ from typing import Optional, List
 from dateutil import parser as date_parser
 from dateutil.tz import tzutc
 import pytz
-from models import ClassOption
+from app.models import ClassOption
 
 class ClassOptionController(Resource):
     # @jwt_required()
