@@ -117,7 +117,7 @@ class TeacherController(Resource):
             'email': args['email'].lower(),
             'phone': args['phone'],
             'password': User.hash_password(args['phone']),
-            'auth': Permission.NORMAL,
+            'auth': Permission.LEVEL3,
             'role_type': RoleType.TEACHER,
             'binding_account': teacher.pk,
             'created': created,

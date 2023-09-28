@@ -88,7 +88,7 @@ class UserController(Resource):
 
         user.account_name = args['account_name']
         user.phone = args['phone']
-        if int(args['auth']['value']) != Permission.ADMIN:
+        if int(args['auth']['value']) != Permission.LEVEL4:
             user.auth = int(args['auth']['value'])
         if args['password']:
             user.password = User.hash_password(args['password'])

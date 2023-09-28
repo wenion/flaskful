@@ -38,7 +38,7 @@ class SignupController(Resource):
             'email': args['email'].lower(),
             'phone': '',
             'password': User.hash_password(args['password']),
-            'auth': Permission.MINIMUM,
+            'auth': Permission.LEVEL4,
             'role_type': RoleType.USER,
             'binding_account': '0',
             'created': created,

@@ -167,7 +167,7 @@ class StudentController(Resource):
             'email': args['email'].lower(),
             'phone': args['phone'],
             'password': User.hash_password(args['first_name']),
-            'auth': Permission.MINIMUM,
+            'auth': Permission.LEVEL4,
             'role_type': RoleType.STUDENT,
             'binding_account': student.pk,
             'created': created,

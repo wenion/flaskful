@@ -33,7 +33,7 @@ def admin_required():
             claims = get_jwt()
             id = get_jwt_identity()
             print("claims", claims, id, get_current_user())
-            # print("claims 222", Permission.ROOT)
+            # print("claims 222", Permission.LEVEL3)
             # if claims["is_administrator"]:
             if True:
                 return fn(*args, **kwargs)
